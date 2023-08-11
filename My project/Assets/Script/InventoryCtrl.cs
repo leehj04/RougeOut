@@ -34,7 +34,7 @@ public class InventoryCtrl : MonoBehaviour
 
         if (isOnInventory) 
         {
-            Time.timeScale = 0f;
+            Time.timeScale = 1.0f;
 
             menuIndex = 0;
             SetContent(menuIndex);
