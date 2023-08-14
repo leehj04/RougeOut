@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.RestService;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DataCtrl : MonoBehaviour
 {
@@ -30,6 +31,15 @@ public class DataCtrl : MonoBehaviour
         playerData = new PlayerData(0);
         for (int i = 0; i < Potion.PotionNum; i++)
             potions.Add(new Potion(i));
+    }
+    private float musicVolume;
+    [SerializeField]
+    private GameObject musicVolumeScrollbar;
+
+    public void MusicVolumeSetting()
+    {
+        musicVolume = musicVolumeScrollbar.GetComponent<Scrollbar>().value;
+        Debug.Log(musicVolume);
     }
 }
 public struct PlayerData
