@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PauseCtrl : MonoBehaviour
 {
@@ -16,17 +17,32 @@ public class PauseCtrl : MonoBehaviour
     [SerializeField]
     private GameObject settingBackImage;
 
+    [SerializeField]
+    private GameObject volumeContents;
+
+    [SerializeField]
+    private GameObject keyContents;
+
+    [SerializeField]
+    private GameObject volumeTab;
+
+    [SerializeField]
+    private GameObject keyTab;
+
     private int currentImage = 0;
     private bool isOnPause = false;
     private bool isOnExit = false;
     private bool isOnOption = false;
-    
+    private Image volumeTabImage;
+    private Image keyTabImage;
 
     private void Start()
     {
+        keyContents.SetActive(false);
         pauseCanvas.SetActive(false);
+        volumeTabImage = volumeTab.GetComponent<Image>();
+        keyTabImage = keyTab.GetComponent<Image>();
     }
-
     public void OnOffPauseButton()
     {
         switch(currentImage)
@@ -63,7 +79,6 @@ public class PauseCtrl : MonoBehaviour
         else
             currentImage = 0;
     }
-
     public void OnOffSettingButton()
     {
         isOnOption = !isOnOption;
@@ -75,7 +90,24 @@ public class PauseCtrl : MonoBehaviour
         settingBackImage.SetActive(isOnOption);
         pauseBackImage.SetActive(isOnPause);
     }
-  
+    public void OnOffVolumeTab()
+    {
+        volumeTabImage.color = new Color(volumeTabImage.color.r, volumeTabImage.color.g, volumeTabImage.color.b, 7 / 255.0f);
+        keyTabImage.color = new Color(keyTabImage.color.r, keyTabImage.color.g, keyTabImage.color.b, 25 / 255.0f);
+
+
+        volumeContents.SetActive(true);
+        keyContents.SetActive(false);
+    }
+    public void OnOffKeyTab()
+    {
+        volumeTabImage.color = new Color(volumeTabImage.color.r, volumeTabImage.color.g, volumeTabImage.color.b, 25 / 255.0f);
+        keyTabImage.color = new Color(keyTabImage.color.r, keyTabImage.color.g, keyTabImage.color.b, 7 / 255.0f);
+
+        keyContents.SetActive(true);
+        volumeContents.SetActive(false);
+
+    }
     public bool ReturnBoolPause()
     {
         return isOnPause;

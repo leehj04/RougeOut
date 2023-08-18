@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.Experimental.RestService;
 using UnityEngine;
 using UnityEngine.UI;
@@ -32,14 +33,44 @@ public class DataCtrl : MonoBehaviour
         for (int i = 0; i < Potion.PotionNum; i++)
             potions.Add(new Potion(i));
     }
-    private float musicVolume;
+
+    [SerializeField]
+    private GameObject masterVolumeScrollbar;
+
     [SerializeField]
     private GameObject musicVolumeScrollbar;
 
+    [SerializeField]
+    private GameObject battleEffectVolumeScrollbar;
+
+    [SerializeField]
+    private GameObject masterVolumeText;
+
+    [SerializeField]
+    private GameObject musicVolumeText;
+
+    [SerializeField]
+    private GameObject battleEffectVolumeText;
+
+    private float masterVolume;
+    private float musicVolume;
+    private float battleEffectVolume;
+
+    public void MasterVolumeSetting()
+    {
+        masterVolume = masterVolumeScrollbar.GetComponent<Scrollbar>().value;
+        masterVolumeText.GetComponent<TextMeshProUGUI>().text = "Master Volume: " + Mathf.RoundToInt(masterVolume*100.0f).ToString();
+    }
     public void MusicVolumeSetting()
     {
         musicVolume = musicVolumeScrollbar.GetComponent<Scrollbar>().value;
-        Debug.Log(musicVolume);
+        musicVolumeText.GetComponent<TextMeshProUGUI>().text = "Music Volume: " + Mathf.RoundToInt(musicVolume * 100.0f).ToString();
+
+    }
+    public void BattleEffectVolumeSetting()
+    {
+        battleEffectVolume = battleEffectVolumeScrollbar.GetComponent<Scrollbar>().value;
+        battleEffectVolumeText.GetComponent<TextMeshProUGUI>().text = "Battle Effect Volume: " + Mathf.RoundToInt(battleEffectVolume*100.0f).ToString();
     }
 }
 public struct PlayerData
