@@ -29,10 +29,12 @@ public class GameCtrl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.F))
         {
             if(!pauseCtrlInstance.ReturnBoolPause())
-            inventoryCtrlInstance.OnOffInventoryButton();
+                inventoryCtrlInstance.OnOffInventoryButton();
         }
+
         if (Input.GetKeyDown(KeyCode.G))
             DataCtrl.instance.playerData.potions[0]++;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!inventoryCtrlInstance.ReturnBoolInventory())
