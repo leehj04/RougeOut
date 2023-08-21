@@ -224,7 +224,7 @@ GameObject:
   - component: {fileID: 4642422732596668308}
   - component: {fileID: 5203801010109857968}
   m_Layer: 5
-  m_Name: InventorySlot
+  m_Name: InventorySlot_Potion
   m_TagString: Untagged
   m_Icon: {fileID: 4422084297763085224, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0

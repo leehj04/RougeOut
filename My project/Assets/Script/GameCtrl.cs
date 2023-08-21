@@ -33,7 +33,13 @@ public class GameCtrl : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.G))
-            DataCtrl.instance.playerData.potions[0]++;
+        {
+            DataCtrl.instance.playerData.potions[Random.Range(0, 11)]++;
+            DataCtrl.instance.playerData.weapons[Random.Range(0, 3)]++;
+            DataCtrl.instance.playerData.armors[Random.Range(0, 2)]++;
+            DataCtrl.instance.playerData.rings[Random.Range(0, 2)]++;
+        }
+            
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {

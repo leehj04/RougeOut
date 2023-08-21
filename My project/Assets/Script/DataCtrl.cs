@@ -37,9 +37,9 @@ public class DataCtrl : MonoBehaviour
             potions.Add(new Potion(i));
         for (int i = 0; i < Weapon.WeaponNum; i++)
             weapons.Add(new Weapon(i));
-        for (int i=0; i<Armor.ArmorNum; i++)
+        for (int i = 0; i < Armor.ArmorNum; i++)
             armors.Add(new Armor(i));
-        for (int i =0; i<Ring.RingNum; i++)
+        for (int i = 0; i < Ring.RingNum; i++)
             rings.Add(new Ring(i));
     }
 
@@ -84,19 +84,26 @@ public class DataCtrl : MonoBehaviour
 }
 public struct PlayerData
 {
+    //정수 배열 선언 => 인덱스별로 담긴 수는 해당 아이템을 가진 수를 뜻함
     public int[] potions;
+    public int[] weapons;
+    public int[] armors;
+    public int[] rings;
+
     public long gold;
     public PlayerData(long _gold)
-
     {
         gold = _gold;
         potions = new int[Potion.PotionNum];
+        weapons = new int[Weapon.WeaponNum];
+        armors = new int[Armor.ArmorNum];
+        rings = new int[Ring.RingNum];
     }
 }
 public class Potion
 {
     //게임내에서 존재하는 포션의 수
-    public static int PotionNum = 4;
+    public static int PotionNum = 11;
     //potions 배열에서 쓰이는 potion인덱스
     public int potionCode;
     public Sprite sprite;
@@ -107,7 +114,6 @@ public class Potion
         sprite = Resources.LoadAll<Sprite>("Potion")[potionCode];
     }
 }
-
 public class Weapon
 {
     public static int WeaponNum = 4;
@@ -121,10 +127,9 @@ public class Weapon
         sprite = Resources.LoadAll<Sprite>("Weapon")[weaponCode];
     }
 }
-
 public class Armor
 {
-    public static int ArmorNum = 4;
+    public static int ArmorNum = 3;
 
     public int armorCode;
     public Sprite sprite;
@@ -138,11 +143,12 @@ public class Armor
 
 public class Ring
 {
-    public static int RingNum = 4;
+    public static int RingNum = 3;
 
     public int ringCode;
     public Sprite sprite;
 
+  
     public Ring(int _ringCode)
     {
         ringCode = _ringCode;
