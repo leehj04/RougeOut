@@ -25,6 +25,11 @@ public class DataCtrl : MonoBehaviour
     public List<Armor> armors = new List<Armor>();
     public List<Ring> rings = new List<Ring>();
 
+    public static bool isWeaponEquiped;
+    public static bool isArmorEquiped;
+    public static bool isRing1Equiped;
+    public static bool isRing2Equiped;
+
     private void Awake()
     {
         instance = this;
@@ -41,6 +46,11 @@ public class DataCtrl : MonoBehaviour
             armors.Add(new Armor(i));
         for (int i = 0; i < Ring.RingNum; i++)
             rings.Add(new Ring(i));
+
+        isWeaponEquiped = false;
+        isArmorEquiped = false;
+        isRing1Equiped = false;
+        isRing2Equiped = false;
     }
 
     [SerializeField]
@@ -89,15 +99,17 @@ public struct PlayerData
     public int[] weapons;
     public int[] armors;
     public int[] rings;
+    public float HP;
 
     public long gold;
     public PlayerData(long _gold)
     {
         gold = _gold;
-        potions = new int[Potion.PotionNum];
-        weapons = new int[Weapon.WeaponNum];
-        armors = new int[Armor.ArmorNum];
-        rings = new int[Ring.RingNum];
+        potions = new int[Potion.PotionNum + 1];
+        weapons = new int[Weapon.WeaponNum + 1];
+        armors = new int[Armor.ArmorNum + 1];
+        rings = new int[Ring.RingNum + 1];
+        HP = 100.0f;
     }
 }
 public class Potion
