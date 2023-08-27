@@ -29,10 +29,11 @@ public class PauseCtrl : MonoBehaviour
     [SerializeField]
     private GameObject keyTab;
 
-    private int currentImage = 0; //0: 퍼즈 창 1: 메인화면으로 나가기 창 2: 설정 창
+    private int currentUI = 0;    //0: 퍼즈 창 1: 메인화면으로 나가기 창 2: 설정 창
     private bool isOnPause = false;
     private bool isOnExit = false;
-    private bool isOnOption = false;
+    private bool isOnSetting = false;
+    public bool isOnKeySetting = false;
     private Image volumeTabImage;
     private Image keyTabImage;
 
@@ -45,14 +46,14 @@ public class PauseCtrl : MonoBehaviour
     }
     public void OnOffPauseButton()
     {
-        switch(currentImage)
+        switch(currentUI)
         {
             case 0:
                 isOnPause = !isOnPause;
                 pauseCanvas.SetActive(isOnPause);
                 exitCheck.SetActive(false);
                 settingBackImage.SetActive(false);
-                if (!pauseBackImage.GetComponent<CanvasGroup>().interactable)
+                if (!pauseBackImage.GetComponent<CanvasGroup>().interactable)  //interactable이 false이면, 
                     pauseBackImage.GetComponent<CanvasGroup>().interactable = !pauseBackImage.GetComponent<CanvasGroup>().interactable;
                 if (isOnPause)
                     Time.timeScale = 0f;
@@ -75,26 +76,25 @@ public class PauseCtrl : MonoBehaviour
         pauseBackImage.GetComponent<CanvasGroup>().interactable = !pauseBackImage.GetComponent<CanvasGroup>().interactable;
         exitCheck.SetActive(isOnExit);
         if (isOnExit)
-            currentImage = 1;
+            currentUI = 1;
         else
-            currentImage = 0;
+            currentUI = 0;
     }
     public void OnOffSettingButton()
     {
-        isOnOption = !isOnOption;
+        isOnSetting = !isOnSetting;
         isOnPause = !isOnPause;
-        if (isOnOption)
-            currentImage = 2;
+        if (isOnSetting)
+            currentUI = 2;
         else
-            currentImage = 0;
-        settingBackImage.SetActive(isOnOption);
+            currentUI = 0;
+        settingBackImage.SetActive(isOnSetting);
         pauseBackImage.SetActive(isOnPause);
     }
-    public void OnOffVolumeTab()
+    public void OnOffVolumeTab()  //해당 탭에 들어왔을 때, 색을 강조하는 기능을 가진 함수
     {
         volumeTabImage.color = new Color(volumeTabImage.color.r, volumeTabImage.color.g, volumeTabImage.color.b, 7 / 255.0f);
         keyTabImage.color = new Color(keyTabImage.color.r, keyTabImage.color.g, keyTabImage.color.b, 25 / 255.0f);
-
 
         volumeContents.SetActive(true);
         keyContents.SetActive(false);
@@ -107,17 +107,17 @@ public class PauseCtrl : MonoBehaviour
         keyContents.SetActive(true);
         volumeContents.SetActive(false);
 
-    }
+    }  //해당 탭에 들어왔을 때, 색을 강조하는 기능을 가진 함수
     public bool ReturnBoolPause()
     {
         return isOnPause;
     }
-    public bool ReturnBoolExit()
-    {
-        return isOnExit;
-    }
     public bool ReturnBoolSetting()
     {
-        return isOnOption;
+        return isOnSetting;
+    }
+    public bool ReturnBoolKeySetting()
+    {
+        return isOnKeySetting;
     }
 }

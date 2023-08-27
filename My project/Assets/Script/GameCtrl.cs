@@ -28,23 +28,6 @@ public class GameCtrl : MonoBehaviour
         Instance = this;
     }
 
-    private void Start()
-    {
-        /*
-        KeySetting keySetting = GetComponent<KeySetting>();
-        if (keySetting != null)
-        {
-            InputBinding inputBinding = new InputBinding(keySetting.Bindings);
-            if (inputBinding != null)
-            {
-                // 원하는 바인딩 값에 접근하여 사용한다.
-                inventoryKey = inputBinding.Bindings[KeySetting.UserAction.UI_Inventory];
-                pauseKey = inputBinding.Bindings[KeySetting.UserAction.UI_Pause];
-            }
-        }
-        */
-    }
-
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F))
@@ -64,15 +47,8 @@ public class GameCtrl : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (!inventoryCtrlInstance.ReturnBoolInventory())
+            if (!inventoryCtrlInstance.ReturnBoolInventory() && !pauseCtrlInstance.ReturnBoolKeySetting())
                 pauseCtrlInstance.OnOffPauseButton();
         }
-        /*
-            if (Input.anyKeyDown)
-                {
-                    string key = Input.inputString;
-                    Debug.Log("Key pressed: " + key);
-                }
-        */
     }
 }

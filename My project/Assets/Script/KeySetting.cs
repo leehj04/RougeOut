@@ -1,115 +1,61 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class KeySetting : MonoBehaviour
 {
-    public enum UserAction
+    public PauseCtrl pauseCtrlInstance;
+
+    public KeyCode defaultKeyCode;         //인스펙터에서 지정해 줘야 함.
+    public GameObject keyText;             //인스펙터에서 지정해 줘야 함.
+    private EventSystem eventSystem;       //새로운 키를 받을 때 UI가 클릭 안 되게 하기 위해.
+    private bool waitingForInput = false;
+    KeyCode newKeyCode;
+
+    private void Start()
     {
-        MoveForward,
-        MoveBackward,
-        MoveLeft,
-        MoveRight,
-
-        Attack,
-        Jump,
-
-        // UI
-        UI_Inventory,
-        UI_Pause,
+        eventSystem = EventSystem.current;
+    }
+    public void StartWaitingForInput()
+    {
+        pauseCtrlInstance.GetComponent<PauseCtrl>().isOnKeySetting = true;
+        eventSystem.enabled = false;
+        StartCoroutine(WaitForPlayerInput());
     }
 
-    //바인딩 클래스
-    [Serializable]
-    public class InputBinding
+    private System.Collections.IEnumerator WaitForPlayerInput()
     {
-        public Dictionary<UserAction, KeyCode> Bindings => _bindingDict;
-        private Dictionary<UserAction, KeyCode> _bindingDict;
+        waitingForInput = true;
+        Debug.Log("버튼을 누르셨습니다. 아무 키를 누르세요.");
 
-        // 생성자
-        public InputBinding(bool initalize = true)
+        while (waitingForInput)
         {
-            _bindingDict = new Dictionary<UserAction, KeyCode>();
-
-            if (initalize)
+            if (Input.anyKey)
             {
-                ResetAll();
-            }
-        }
-
-        // 새로운 바인딩 적용
-        public void ApplyNewBindings(InputBinding newBinding)
-        {
-            _bindingDict = new Dictionary<UserAction, KeyCode>(newBinding._bindingDict);
-        }
-
-        // 바인딩 지정 메소드 : allowOverlap 매개변수를 통해 중복 바인딩 허용여부를 결정한다.
-        public void Bind(in UserAction action, in KeyCode code, bool allowOverlap = false)
-        {
-            if (!allowOverlap && _bindingDict.ContainsValue(code))
-            {
-                var copy = new Dictionary<UserAction, KeyCode>(_bindingDict);
-
-                foreach (var pair in copy)
+                foreach (KeyCode privateKeyCode in System.Enum.GetValues(typeof(KeyCode)))
                 {
-                    if (pair.Value.Equals(code))
+                    if (Input.GetKeyDown(privateKeyCode) && privateKeyCode != KeyCode.Escape)
                     {
-                        _bindingDict[pair.Key] = KeyCode.None;
+                        newKeyCode = privateKeyCode;
+                        break;
                     }
                 }
+                Debug.Log(newKeyCode);
+                //Escape키를 누르거나 해서 None이 되었을 때.
+                if (newKeyCode == KeyCode.None)
+                    newKeyCode = defaultKeyCode;
+                Debug.Log(newKeyCode);
+                keyText.GetComponent<TextMeshProUGUI>().text = System.Enum.GetName(typeof(KeyCode), newKeyCode);
+                waitingForInput = false;
             }
-            _bindingDict[action] = code;
+
+            yield return null;
         }
 
-        // 초기 바인딩셋 지정 메소드
-        public void ResetAll()
-        {
-            Bind(UserAction.Attack, KeyCode.Mouse0);
-
-            Bind(UserAction.MoveForward, KeyCode.W);
-            Bind(UserAction.MoveBackward, KeyCode.S);
-            Bind(UserAction.MoveLeft, KeyCode.A);
-            Bind(UserAction.MoveRight, KeyCode.D);
-
-            Bind(UserAction.Jump, KeyCode.Space);
-
-            Bind(UserAction.UI_Inventory, KeyCode.F);
-            Bind(UserAction.UI_Pause, KeyCode.Escape);
-        }
-    }
-
-    //직렬화 가능한 클래스
-    [Serializable]
-    public class SerializableInputBinding
-    {
-        public BindPair[] bindPairs;
-        //생성자
-        public SerializableInputBinding(InputBinding binding)
-        {
-            int len = binding.Bindings.Count;  //binding의 Bindings딕셔너리에 접근, 딕셔너리가 포함된 ICollection 기본 메서드인 Count를 통해 갯수를 셈
-            int index = 0;
-
-            bindPairs = new BindPair[len];
-
-            foreach (var pair in binding.Bindings)
-            {
-                bindPairs[index++] =
-                    new BindPair(pair.Key, pair.Value);
-            }
-        }
-    }
-
-    [Serializable]
-    public class BindPair
-    {
-        public UserAction key;
-        public KeyCode value;
-
-        public BindPair(UserAction key, KeyCode value)
-        {
-            this.key = key;
-            this.value = value;
-        }
+        Debug.Log("입력 기다리기 종료");
+        eventSystem.enabled = true;
+        pauseCtrlInstance.GetComponent<PauseCtrl>().isOnKeySetting = false;
+        
     }
 }
