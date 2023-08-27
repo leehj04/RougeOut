@@ -8,13 +8,17 @@ public class GameManager : MonoBehaviour
     public int stageCoin;
     public int stageIndex;
     public int health;
-    public PlayerMove player;
+    public Player player;
     public GameObject[] Stages;
 
     public void NextStage()
     {
+        //금화 계산
+        totalCoin += stageCoin;
+        stageCoin = 0;
+
         //스테이지 전환
-        if(stageIndex < Stages.Length - 1)
+        if (stageIndex < Stages.Length - 1)
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++;
@@ -27,10 +31,6 @@ public class GameManager : MonoBehaviour
             Time.timeScale = 0;
             Debug.Log("게임 클리어!");
         }
-
-        //금화 계산
-        totalCoin += stageCoin;
-        stageCoin = 0;
     }
 
     void PlayerReposition()
@@ -38,9 +38,4 @@ public class GameManager : MonoBehaviour
         player.transform.position = new Vector3(0, 0, 0);
         player.VelocityZero();
     }
-    
-    /*void Update()
-    {
-        
-    }*/
 }
