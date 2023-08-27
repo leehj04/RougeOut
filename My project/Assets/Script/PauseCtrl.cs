@@ -29,7 +29,7 @@ public class PauseCtrl : MonoBehaviour
     [SerializeField]
     private GameObject keyTab;
 
-    private int currentImage = 0;
+    private int currentImage = 0; //0: 퍼즈 창 1: 메인화면으로 나가기 창 2: 설정 창
     private bool isOnPause = false;
     private bool isOnExit = false;
     private bool isOnOption = false;
@@ -115,5 +115,9 @@ public class PauseCtrl : MonoBehaviour
     public bool ReturnBoolExit()
     {
         return isOnExit;
+    }
+    public bool ReturnBoolSetting()
+    {
+        return isOnOption;
     }
 }

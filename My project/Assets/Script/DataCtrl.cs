@@ -115,7 +115,7 @@ public struct PlayerData
 public class Potion
 {
     //게임내에서 존재하는 포션의 수
-    public static int PotionNum = 11;
+    public static int PotionNum = 8;
     //potions 배열에서 쓰이는 potion인덱스
     public int potionCode;
     public Sprite sprite;
