@@ -19,10 +19,7 @@ public class GameCtrl : MonoBehaviour
     }
     public InventoryCtrl inventoryCtrlInstance;
     public PauseCtrl pauseCtrlInstance;
-    /*
-    private KeyCode pauseKey;
-    private KeyCode inventoryKey;
-    */
+
     private void Awake()
     {
         Instance = this;
@@ -30,7 +27,7 @@ public class GameCtrl : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(DataCtrl.instance.mappedKey.Inventory))
         {
             if(!pauseCtrlInstance.ReturnBoolPause() && !pauseCtrlInstance.ReturnBoolSetting())
                 inventoryCtrlInstance.OnOffInventoryButton();
@@ -45,7 +42,7 @@ public class GameCtrl : MonoBehaviour
         }
             
         
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(DataCtrl.instance.mappedKey.Menu))
         {
             if (!inventoryCtrlInstance.ReturnBoolInventory() && !pauseCtrlInstance.ReturnBoolKeySetting())
                 pauseCtrlInstance.OnOffPauseButton();

@@ -30,6 +30,7 @@ public class DataCtrl : MonoBehaviour
     public static bool isRing1Equiped;
     public static bool isRing2Equiped;
 
+    public MappedKey mappedKey;
     private void Awake()
     {
         instance = this;
@@ -51,6 +52,9 @@ public class DataCtrl : MonoBehaviour
         isArmorEquiped = false;
         isRing1Equiped = false;
         isRing2Equiped = false;
+
+        mappedKey = new MappedKey();
+        mappedKey.AddList();
     }
 
     [SerializeField]
@@ -165,5 +169,75 @@ public class Ring
     {
         ringCode = _ringCode;
         sprite = Resources.LoadAll<Sprite>("Ring")[ringCode];
+    }
+}
+[System.Serializable]
+public class MappedKey
+{
+    public KeyCode Skill_1_KeyCode;
+    public KeyCode Skill_2_KeyCode;
+    public KeyCode Skill_3_KeyCode;
+    public KeyCode Skill_4_KeyCode;
+
+    public KeyCode Item_1_KeyCode;
+    public KeyCode Item_2_KeyCode;
+
+    public KeyCode MoveForward;
+    public KeyCode MoveBackward;
+    public KeyCode MoveUp;
+    public KeyCode MoveDown;
+    public KeyCode Jump;
+    public KeyCode Attack;
+    public KeyCode Inventory;
+    public KeyCode Menu;
+
+    public List<KeyCode> Keys;
+    public MappedKey()
+    {
+        Skill_1_KeyCode = KeyCode.Q;
+        Skill_2_KeyCode = KeyCode.W;
+        Skill_3_KeyCode = KeyCode.E;
+        Skill_4_KeyCode = KeyCode.R;
+        Item_1_KeyCode = KeyCode.Alpha1;
+        Item_2_KeyCode = KeyCode.Alpha2;
+        MoveForward = KeyCode.RightArrow;
+        MoveBackward = KeyCode.LeftArrow;
+        MoveUp = KeyCode.UpArrow;
+        MoveDown = KeyCode.DownArrow;
+        Jump = KeyCode.Space;
+        Attack = KeyCode.LeftShift;
+        Inventory = KeyCode.F;
+        Menu = KeyCode.Escape;
+
+        Keys = new List<KeyCode>();
+    }
+    public void AddList()
+    {
+        Keys.Clear();
+        Keys.Add(Skill_1_KeyCode);
+        Keys.Add(Skill_2_KeyCode);
+        Keys.Add(Skill_3_KeyCode);
+        Keys.Add(Skill_4_KeyCode);
+        Keys.Add(Item_1_KeyCode);
+        Keys.Add(Item_2_KeyCode);
+        Keys.Add(MoveForward);
+        Keys.Add(MoveBackward);
+        Keys.Add(MoveUp);
+        Keys.Add(MoveDown);
+        Keys.Add(Jump);
+        Keys.Add(Attack);
+        Keys.Add(Inventory);
+        Keys.Add(Menu);
+    }
+    public bool FindDuplication()
+    {
+        List<KeyCode> sortedKeyCodes = new List<KeyCode>(Keys);
+        sortedKeyCodes.Sort();
+        for (int i = 1; i < sortedKeyCodes.Count; i++)
+        {
+            if (sortedKeyCodes[i] == sortedKeyCodes[i - 1])
+                return true;
+        }
+        return false;
     }
 }
