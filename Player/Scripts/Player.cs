@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.ConstrainedExecution;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -10,6 +11,7 @@ public class Player : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     Animator anim;
+    Color originalColor;
 
     [SerializeField]
     public float speed;
@@ -20,7 +22,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     float checkRadius;
     [SerializeField]
-    LayerMask islayer;
+    LayerMask isLayer;
 
     public int jumpCount;
     int jumpCnt;
@@ -38,6 +40,10 @@ public class Player : MonoBehaviour
     public Transform posEnemy;
     public Vector2 boxSize;
 
+    private bool isFlashing = false;
+    private float flashInterval = 0.2f;  //깜빡이는 간격
+    private float flashTimer = 0f;
+
     private bool isDead = false;
 
     public void Awake()
@@ -46,13 +52,14 @@ public class Player : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         jumpCnt = jumpCount;
+        originalColor = spriteRenderer.color;
     }
 
     public void Update()
     {
         if (!isDead) {
             //점프
-            isOnGround = Physics2D.OverlapCircle(pos.position, checkRadius/2, islayer);
+            isOnGround = Physics2D.OverlapCircle(pos.position, checkRadius/2, isLayer);
             anim.SetBool("isOnGround", isOnGround);
 
             plyYVel = Mathf.Round(rigid.velocity.y); //플레이어 상하 움직임 속도
@@ -64,7 +71,6 @@ public class Player : MonoBehaviour
                 rigid.velocity = Vector2.up * jumpPower;
                 jumpCnt--;
             }
-
 
             //공격 평타 H
             if (curTime <= 0)
@@ -83,6 +89,17 @@ public class Player : MonoBehaviour
             else
             {
                 curTime -= Time.deltaTime;
+            }
+
+            //무적 시각화 깜빡임
+            if(isFlashing)
+            {
+                flashTimer += Time.deltaTime;
+                if(flashTimer >= flashInterval)
+                {
+                    flashTimer = 0f;
+                    spriteRenderer.color = spriteRenderer.color == originalColor ? new Color(1, 1, 1, 0.1f) : originalColor;
+                }
             }
         }
     }
@@ -159,10 +176,11 @@ public class Player : MonoBehaviour
             //사다리타기
             if (collision.gameObject.tag == "Ladder") { isLadder = true; }
 
-            
+
 
             //금화 획득
-            if (collision.gameObject.tag == "Item") {
+            if (collision.gameObject.tag == "Item")
+            {
                 bool isSilver = collision.gameObject.name.Contains("Silver");
                 bool isGold = collision.gameObject.name.Contains("Gold");
 
@@ -175,7 +193,8 @@ public class Player : MonoBehaviour
             }
 
             //결승점()
-            else if (collision.gameObject.tag == "Finish") {
+            else if (collision.gameObject.tag == "Finish")
+            {
                 gameManager.NextStage();
             }
         }
@@ -219,8 +238,9 @@ public class Player : MonoBehaviour
             //플레이어 레이어 변경
             gameObject.layer = 11;
 
-            //무적 시각화
+            //무적 시각화 깜빡임
             spriteRenderer.color = new Color(1, 1, 1, 0.1f);
+            isFlashing = true;
 
             //피격시 플레이어 튕기는 모션
             int dirc = transform.position.x - targetPos.x > 0 ? 1 : -1;
@@ -236,9 +256,11 @@ public class Player : MonoBehaviour
     public void OffDamaged()
     {
         if (!isDead) {
-            gameObject.layer = 10;  //플레이어 레이어 변경
+            gameObject.layer = 10; //플레이어 레이어 변경
 
-            spriteRenderer.color = new Color(1, 1, 1, 1);  //무적해제 시각화
+            //무적 시각화 종료
+            isFlashing = false;
+            spriteRenderer.color = originalColor;
         }
     }
 

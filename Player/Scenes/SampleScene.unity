@@ -886,7 +886,7 @@ MonoBehaviour:
   jumpPower: 7
   pos: {fileID: 1637292339}
   checkRadius: 0.35
-  islayer:
+  isLayer:
     serializedVersion: 2
     m_Bits: 256
   jumpCount: 2
