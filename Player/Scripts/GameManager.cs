@@ -7,7 +7,8 @@ public class GameManager : MonoBehaviour
     public int totalCoin;
     public int stageCoin;
     public int stageIndex;
-    public int health;
+    public int health = 500; //플레이어 체력
+    public int armor = 0;
     public Player player;
     public GameObject[] Stages;
 

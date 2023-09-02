@@ -7,6 +7,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
+    public Enemy enemy;
 
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
@@ -35,10 +36,12 @@ public class Player : MonoBehaviour
 
     public bool isDownFloor;
 
-    private float curTime;
-    private static float coolTime = 0.5f;
+    private float curTimeShift;
+    private static float coolTimeShift = 2f; //평타 Shift 쿨타임 0.5초
     public Transform posEnemy;
     public Vector2 boxSize;
+    private float curTimeQ;
+    private static float coolTimeQ = 10f; //Q스킬 쿨타임 60초
 
     private bool isFlashing = false;
     private float flashInterval = 0.2f;  //깜빡이는 간격
@@ -72,27 +75,53 @@ public class Player : MonoBehaviour
                 jumpCnt--;
             }
 
-            //공격 평타 H
-            if (curTime <= 0)
+            //공격 평타 SHIFT -- 공격력 20
+            if (curTimeShift <= 0)
             {
-                if (Input.GetKey(KeyCode.H))
+                if (Input.GetKey(KeyCode.H)) //LeftShift로 해야되는데 시현할 때 고정키 알림창 팝업으로 인하여 H로 변경한 상태임.
+                {
+                    Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(posEnemy.position, boxSize, 0);
+                    foreach (Collider2D collider in collider2Ds)
+                    {
+                        // 콜라이더에 부착된 컴포넌트의 이름을 비교하여 데미지를 적용합니다.
+                        Enemy enemy = collider.gameObject.GetComponent<Enemy>(); // ComponentType을 실제 사용하는 컴포넌트 타입으로 변경해야 합니다.
+
+                        if (enemy != null && enemy.name == "Enemy")
+                        {
+                            enemy.health -= 20;
+                        }
+
+                    }
+                    anim.SetTrigger("isAttack");
+                    curTimeShift = coolTimeShift;
+                }
+            }
+            else
+            {
+                curTimeShift -= Time.deltaTime;
+            }
+
+            //공격 스킬 Q
+            if(curTimeQ <= 0)
+            {
+                if(Input.GetKey(KeyCode.Q))
                 {
                     Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(posEnemy.position, boxSize, 0);
                     foreach (Collider2D collider in collider2Ds)
                     {
                         Debug.Log(collider.tag);
                     }
-                    anim.SetTrigger("isAttack");
-                    curTime = coolTime;
+                    anim.SetTrigger("isSkill");
+                    curTimeQ = coolTimeQ;
                 }
             }
             else
             {
-                curTime -= Time.deltaTime;
+                curTimeQ -= Time.deltaTime;
             }
 
             //무적 시각화 깜빡임
-            if(isFlashing)
+            if (isFlashing)
             {
                 flashTimer += Time.deltaTime;
                 if(flashTimer >= flashInterval)
@@ -185,14 +214,38 @@ public class Player : MonoBehaviour
                 bool isGold = collision.gameObject.name.Contains("Gold");
 
                 if (isSilver)
-                    gameManager.stageCoin += 1;  //필드 몬스터 처치 후 금화
+                    gameManager.stageCoin += 1;  //필드 몬스터(슬라임) 처치 후 금화
                 else if (isGold)
-                    gameManager.stageCoin += 3;  //던전 몬스터 처치 후 금화
+                    gameManager.stageCoin += 3;  //던전 몬스터(잡몹) 처치 후 금화
 
                 collision.gameObject.SetActive(false);  //금화 사라짐
             }
 
-            //결승점()
+            //회복 포션 -- public void OnTriggerEnter2D(Collider2D collision)에서 다른 함수로 이동시켜야됨.
+            if (collision.gameObject.tag == "Potion")
+            {
+                bool isHealthPotion = collision.gameObject.name.Contains("HealthPotion");
+
+                if (isHealthPotion)
+                    gameManager.health += 20;
+
+                collision.gameObject.SetActive(false); //포션 사라짐
+            }
+
+            //회복의 반지
+            if(collision.gameObject.tag == "Ring")
+            {
+                bool isHealthRing = collision.gameObject.name.Contains("HealthRing");
+
+                if (isHealthRing)
+                {
+                    gameManager.health += 20; //TODO 잡몹 5마리 처치 시 추가
+                }
+
+                collision.gameObject.SetActive(false);
+            }
+
+            //결승점
             else if (collision.gameObject.tag == "Finish")
             {
                 gameManager.NextStage();
@@ -211,20 +264,20 @@ public class Player : MonoBehaviour
         }
     }
 
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "DownFloor")
+        {
+            if (Input.GetAxisRaw("Vertical") < 0) { GetComponent<CapsuleCollider2D>().isTrigger = true; }
+        }
+    }
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isDead) {
             //플레이어 피격
             if (collision.gameObject.tag == "Enemy")
                 OnDamged(collision.transform.position);
-        }
-    }
-
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (collision.gameObject.tag == "DownFloor")
-        {
-            if (Input.GetAxisRaw("Vertical") < 0) { GetComponent<CapsuleCollider2D>().isTrigger = true; }
         }
     }
 
@@ -264,6 +317,7 @@ public class Player : MonoBehaviour
         }
     }
 
+    //플레이어 죽음
     public void Death()
     {
         if (gameManager.health <= 0)
@@ -271,7 +325,7 @@ public class Player : MonoBehaviour
             gameManager.health = 0;
             anim.SetTrigger("Dead");
             gameObject.layer = 11;
-            spriteRenderer.color = new Color(0.5f, 0.5f, 0.5f);
+            spriteRenderer.color = new Color(0, 0, 0);
             isDead = true;
         }
     }
