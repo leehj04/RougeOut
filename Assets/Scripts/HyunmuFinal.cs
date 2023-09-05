@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class HyunmuFinal : BaseEnemy
+public class HyunmuFinal : MonoBehaviour
 {
     public int startingHP = 300;
     private int currentHP;
@@ -21,6 +21,7 @@ public class HyunmuFinal : BaseEnemy
     public Vector2 boxSize;
     public GameObject bullet;
     public Transform pos1;
+    protected Transform target;
 
     private bool isRunning = false;
     private bool isHurt = false;
@@ -39,9 +40,8 @@ public class HyunmuFinal : BaseEnemy
     }
     private EnemyState currentState = EnemyState.Default;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
         currentHP = startingHP;
         target = GameObject.FindGameObjectWithTag("Player").transform;
         anim = GetComponent<Animator>();
@@ -51,9 +51,8 @@ public class HyunmuFinal : BaseEnemy
         StartCoroutine(InstantMove());
     }
 
-    protected override void Update()
+    private void Update()
     {
-        base.Update();
         if (currentHP <= 0 && currentState != EnemyState.Dead)
         {
             Die();
@@ -152,7 +151,7 @@ public class HyunmuFinal : BaseEnemy
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
     }
 
-    private new void Die()
+    private void Die()
     {
         currentState = EnemyState.Dead;
         anim.SetTrigger("die");
@@ -200,7 +199,7 @@ public class HyunmuFinal : BaseEnemy
     }
 
 
-    public new void TakeDamage(int damage)
+    public void TakeDamage(int damage)
     {
         if (isDefending)
         {

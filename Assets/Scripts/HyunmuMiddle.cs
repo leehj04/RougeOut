@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HyunmuMiddle : BaseEnemy
+public class HyunmuMiddle : MonoBehaviour
 {
     public float moveSpeed = 2.0f;
     public float chaseSpeed = 4.0f;
@@ -12,9 +12,11 @@ public class HyunmuMiddle : BaseEnemy
     private int maxHealth = 300;
     private bool isMoving = false;
     private bool hasAttacked = false;
+    private int currentHealth;
     private Vector3 initialScale;
     public Transform pos;
     public Vector2 boxSize;
+    private Transform target;
 
     private Vector3 initialPosition;
     private Animator AnimHyunmuMiddle;
@@ -27,24 +29,22 @@ public class HyunmuMiddle : BaseEnemy
         Returning
     }
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
+        target = GameObject.FindGameObjectWithTag("Player").transform; //플레이어에 Player 태그 추가
         initialScale = transform.localScale;
         AnimHyunmuMiddle = GetComponent<Animator>();
 
     }
     private EnemyState currentState = EnemyState.Idle;
 
-    protected override void Start()
+    private void Start()
     {
-        base.Start();
         initialPosition = transform.position;
     }
 
-    protected override void Update()
+    private void Update()
     {
-        base.Update();
         float distanceToPlayer = Vector3.Distance(transform.position, target.position);
 
         switch (currentState)
@@ -142,7 +142,7 @@ public class HyunmuMiddle : BaseEnemy
         Gizmos.DrawWireCube(pos.position, boxSize);
     }
 
-    private new void TakeDamage(int amount)
+    private void TakeDamage(int amount)
     {
         AnimHyunmuMiddle.SetTrigger("hurt");
         currentHealth -= amount;
@@ -152,7 +152,7 @@ public class HyunmuMiddle : BaseEnemy
             Die();
         }
     }
-    private new void Die()
+    private void Die()
     {
         AnimHyunmuMiddle.SetTrigger("death");
         Destroy(gameObject, 1.0f);

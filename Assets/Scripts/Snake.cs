@@ -2,23 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Snake : BaseEnemy
+public class Snake : MonoBehaviour
 {
     Rigidbody2D rigid;
     Animator SnakeAnim;
     SpriteRenderer spriteRenderer;
     public int nextMove;
     private int maxHealth = 200;
-    protected override void Start()
+    private int currentHealth;
+    private void Start()
     {
-        base.Start();
 
         currentHealth = maxHealth;
     }
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
         rigid = GetComponent<Rigidbody2D>();
         SnakeAnim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -27,10 +26,7 @@ public class Snake : BaseEnemy
         Invoke("Think", 2);
     }
 
-    protected override void Update()
-    {
-        base.Update();
-    }
+
     void FixedUpdate()
     {
         rigid.velocity = new Vector2(nextMove, rigid.velocity.y);
@@ -90,5 +86,19 @@ public class Snake : BaseEnemy
 
         CancelInvoke();
         Invoke("Think", 2);
+    }
+    public virtual void TakeDamage(int amount)
+    {
+        currentHealth -= amount;
+
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+
+    public virtual void Die()
+    {
+        Destroy(gameObject);
     }
 }
