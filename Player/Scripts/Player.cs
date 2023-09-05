@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Runtime.ConstrainedExecution;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,7 +8,8 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     public GameManager gameManager;
-    public Enemy enemy;
+    public Slime slime;
+    public MidEN midEN;
 
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
@@ -36,16 +38,19 @@ public class Player : MonoBehaviour
 
     public bool isDownFloor;
 
+    private Transform plyTransform;
+
     private float curTimeShift;
-    private static float coolTimeShift = 2f; //평타 Shift 쿨타임 0.5초
+    private static float coolTimeShift = 1.2f; //평타 Shift 쿨타임 1.5초
     public Transform posEnemy;
     public Vector2 boxSize;
+
     private float curTimeQ;
     private static float coolTimeQ = 10f; //Q스킬 쿨타임 60초
 
     private bool isFlashing = false;
     private float flashInterval = 0.2f;  //깜빡이는 간격
-    private float flashTimer = 0f;
+    private float flashTimer = 0f;  
 
     private bool isDead = false;
 
@@ -56,6 +61,12 @@ public class Player : MonoBehaviour
         anim = GetComponent<Animator>();
         jumpCnt = jumpCount;
         originalColor = spriteRenderer.color;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            plyTransform = player.transform;
+        }
     }
 
     public void Update()
@@ -83,12 +94,19 @@ public class Player : MonoBehaviour
                     Collider2D[] collider2Ds = Physics2D.OverlapBoxAll(posEnemy.position, boxSize, 0);
                     foreach (Collider2D collider in collider2Ds)
                     {
-                        // 콜라이더에 부착된 컴포넌트의 이름을 비교하여 데미지를 적용합니다.
-                        Enemy enemy = collider.gameObject.GetComponent<Enemy>(); // ComponentType을 실제 사용하는 컴포넌트 타입으로 변경해야 합니다.
+                        Slime slime = collider.gameObject.GetComponent<Slime>();
+                        MidEN midEN = collider.gameObject.GetComponent<MidEN>();
 
-                        if (enemy != null && enemy.name == "Enemy")
+                        //슬라임 피격
+                        if (slime != null && slime.name == "Slime")
                         {
-                            enemy.health -= 20;
+                            slime.health -= 20;
+                        }
+
+                        //중간보스 피격
+                        else if(midEN != null && midEN.name == "MidEN")
+                        {
+                            midEN.health -= 20;
                         }
 
                     }
@@ -144,17 +162,23 @@ public class Player : MonoBehaviour
         if (!isDead) {
             // 좌우 이동
             float hor = Input.GetAxisRaw(("Horizontal"));
-            bool ishpLow;
             rigid.velocity = new Vector2(hor * speed, rigid.velocity.y);
 
             //플레이어 헐떡임 Anim
+            bool ishpLow;
             if (gameManager.health <= 100) { ishpLow = true; }
             else { ishpLow = false; }
 
             anim.SetFloat("Speed", Mathf.Abs(hor));
             anim.SetBool("isHpLow", ishpLow);
 
-            if (hor != 0) { spriteRenderer.flipX = hor < 0; }
+            if (hor != 0) { 
+                spriteRenderer.flipX = hor < 0;
+                
+                Vector3 newPosEN = posEnemy.position;
+                newPosEN.x = plyTransform.position.x - (hor * -1.0f);
+                posEnemy.position = newPosEN;
+            }
 
             //사다리 구현
             if (isLadder)
@@ -204,8 +228,6 @@ public class Player : MonoBehaviour
         if (!isDead) {
             //사다리타기
             if (collision.gameObject.tag == "Ladder") { isLadder = true; }
-
-
 
             //금화 획득
             if (collision.gameObject.tag == "Item")
@@ -277,15 +299,22 @@ public class Player : MonoBehaviour
         if (!isDead) {
             //플레이어 피격
             if (collision.gameObject.tag == "Enemy")
-                OnDamged(collision.transform.position);
+            {
+                if (collision.gameObject.name.Contains("Slime") || collision.gameObject.name.Contains("MidEN"))
+                    OnDamged(collision.transform.position);
+                if (collision.gameObject.name.Contains("DeadFloor"))
+                {
+                    gameManager.health -= 20;
+                    OnDamged(collision.transform.position);
+                }
+            }
+
         }
     }
 
     public void OnDamged(Vector2 targetPos)
     {
         if (!isDead) {
-            //플레이어 체력 깍임
-            gameManager.health -= 10;
             Death();
 
             //플레이어 레이어 변경
